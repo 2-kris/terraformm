@@ -3,5 +3,5 @@ variable "aws_instance_type" {
 }
 
 variable "aws_ami" {
-  description = "AWS AMI ID"  
+  description = "AWS AMI ID"
 }

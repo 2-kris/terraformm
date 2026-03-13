@@ -1,8 +1,9 @@
-resource "aws_instance" "example" {
-  ami           = var.aws_ami
-  instance_type = var.aws_instance_type
+provider "aws" {
+  region = "ap-south-1"
+}
 
-  tags = {
-    Name = "HelloWorld"
-  }
+module "ec2" {
+  source            = "./modules/ec2_instance"
+  aws_ami           = "ami-019715e0d74f695be"
+  aws_instance_type = "t2.micro"
 }
