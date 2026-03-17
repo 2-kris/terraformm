@@ -16,6 +16,7 @@ resource "aws_subnet" "public-subnet-1" {
   vpc_id     = aws_vpc.my-vpc.id
   cidr_block = "10.0.1.0/24"
   map_public_ip_on_launch = true
+  availability_zone = "ap-south-1a"
 
   tags = {
     Name = "public-subnet-1"
@@ -117,11 +118,30 @@ resource "aws_instance" "example" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt update -y",
-      "sudo apt install python3-pip -y",
-      "cd /home/ubuntu",
-      "sudo pip3 install flask",
-      "sudo nohup python3 app.py &"
+    "set -e",
+    "sudo apt update -y",
+    "sudo apt install python3-venv -y",
+
+    # Create virtual environment
+    "python3 -m venv /home/ubuntu/venv",
+
+    # Install Flask inside venv
+    "/home/ubuntu/venv/bin/pip install flask",
+
+    "while [ ! -f /home/ubuntu/app.py ]; do sleep 2; done",
+
+    # Go to app directory
+    "chmod +x /home/ubuntu/app.py",
+
+    "sleep 5", # Wait for a few seconds to ensure that the Flask app is fully copied before trying to run it
+
+    "ls -l /home/ubuntu/", # List the app.py file to verify that it exists and has the correct permissions
+
+    # Run app in background
+    "nohup /home/ubuntu/venv/bin/python /home/ubuntu/app.py > app.log 2>&1 &",
+
+    "sleep 3",
+    "ps aux | grep app.py >> /home/ubuntu/app.log"
     ]
   }
 }
