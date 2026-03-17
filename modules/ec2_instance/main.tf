@@ -4,10 +4,14 @@ variable "aws_vpc_cidr" {
 
 resource "aws_vpc" "my-vpc" {
   cidr_block = var.aws_vpc_cidr
+
+  tags = {
+    Name = "my-vpc-${terraform.workspace}"
+  }
 }
 
 resource "aws_key_pair" "my-key" {
-  key_name   = "my-key"
+  key_name   = "my-key-${terraform.workspace}"
   public_key = file("C:/Users/krishnamisal/.ssh/id_ed25519.pub")
 
 }
